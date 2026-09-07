@@ -1,7 +1,7 @@
 {
-  "name": "pemrograman",
+  "name": "tictactoe",
   "version": "1.0.0",
-  "description": "",
+  "description": "Game Tic-Tac-Toe sederhana menggunakan React",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Davy27-sys/pkl.git"
+    "url": "git+https://github.com/Davy27-sys/tictactoe.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/Davy27-sys/pkl/issues"
+    "url": "https://github.com/Davy27-sys/tictactoe/issues"
   },
   "dependencies": {
     "react": "^19.2.8",
