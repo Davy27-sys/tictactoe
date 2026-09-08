@@ -1,92 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.css";
-
-function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return { winner: squares[a], line: lines[i] };
-    }
-  }
-  return null;
-}
-
-function Square({ value, onSquareClick, isWinning }) {
-  let markClass = "";
-  if (value === "X") markClass = "x-mark";
-  if (value === "O") markClass = "o-mark";
-
-  const className = `square ${markClass} ${isWinning ? "winning-square" : ""}`;
-
-  return (
-    <button className={className} onClick={onSquareClick}>
-      {value}
-    </button>
-  );
-}
+import MainMenu from "./components/MainMenu";
+import Game from "./components/Game";
 
 export default function App() {
-  const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState(Array(9).fill(null));
+  const [screen, setScreen] = useState("menu");
 
-  const winInfo = calculateWinner(squares);
-  const winner = winInfo ? winInfo.winner : null;
-  const winningLine = winInfo ? winInfo.line : [];
-  const isDraw = !winner && squares.every((square) => square !== null);
+  // Skor tetap disimpan di localStorage
+  const [scores, setScores] = useState(() => {
+    const saved = localStorage.getItem("tictactoe_scores");
+    return saved ? JSON.parse(saved) : { x: 0, o: 0, draw: 0 };
+  });
 
-  function handleClick(i) {
-    if (squares[i] || winner) return;
+  useEffect(() => {
+    localStorage.setItem("tictactoe_scores", JSON.stringify(scores));
+  }, [scores]);
 
-    const nextSquares = squares.slice();
-    nextSquares[i] = xIsNext ? "X" : "O";
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext);
-  }
+  const handleGameEnd = (result) => {
+    setScores((prev) => {
+      if (result === "X") return { ...prev, x: prev.x + 1 };
+      if (result === "O") return { ...prev, o: prev.o + 1 };
+      if (result === "draw") return { ...prev, draw: prev.draw + 1 };
+      return prev;
+    });
+  };
 
-  function handleReset() {
-    setSquares(Array(9).fill(null));
-    setXIsNext(true);
-  }
-
-  let status;
-  if (winner) {
-    status = `Pemenang: ${winner}`;
-  } else if (isDraw) {
-    status = "Hasil Seri!";
-  } else {
-    status = `Giliran: ${xIsNext ? "X" : "O"}`;
-  }
+  const handleResetScore = () => {
+    setScores({ x: 0, o: 0, draw: 0 });
+  };
 
   return (
-    <div className="game-container">
-      <h1 className="title">Tic Tac Toe</h1>
-      <div className="status">{status}</div>
-      <div className="board">
-        {squares.map((square, index) => (
-          <Square
-            key={index}
-            value={square}
-            onSquareClick={() => handleClick(index)}
-            isWinning={winningLine.includes(index)}
-          />
-        ))}
-      </div>
-
-      {/* Tombol Ulangi Permainan */}
-      <button className="reset-btn" onClick={handleReset}>
-        Ulangi Permainan
-      </button>
+    <div className="App">
+      {screen === "menu" && <MainMenu onNavigate={setScreen} />}
+      {screen === "game" && (
+        <Game
+          onBack={() => setScreen("menu")}
+          onGameEnd={handleGameEnd}
+          scores={scores}
+          onResetScore={handleResetScore}
+        />
+      )}
     </div>
   );
 }
