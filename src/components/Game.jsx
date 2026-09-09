@@ -22,7 +22,6 @@ function calculateWinner(squares) {
 }
 
 function Square({ value, onSquareClick, isWinning }) {
-  // Hanya berikan class 'winning-square' jika kotak ini bagian dari garis kemenangan
   const className = `square ${isWinning ? "winning-square" : ""}`;
 
   return (
@@ -32,7 +31,13 @@ function Square({ value, onSquareClick, isWinning }) {
   );
 }
 
-export default function Game({ onBack, onGameEnd, scores, onResetScore }) {
+export default function Game({
+  onBack,
+  onGameEnd,
+  scores,
+  onResetScore,
+  theme = "light",
+}) {
   const [xIsNext, setXIsNext] = useState(true);
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [hasRecordedResult, setHasRecordedResult] = useState(false);
@@ -68,7 +73,6 @@ export default function Game({ onBack, onGameEnd, scores, onResetScore }) {
     setHasRecordedResult(false);
   }
 
-  // Teks giliran otomatis hilang saat game selesai (menang / seri)
   let status = "";
   if (winner) {
     status = `Pemenang: ${winner}`;
@@ -79,7 +83,7 @@ export default function Game({ onBack, onGameEnd, scores, onResetScore }) {
   }
 
   return (
-    <div className="game-container">
+    <div className={`game-container theme-${theme}`}>
       <button
         className="reset-btn"
         style={{ marginBottom: "15px", backgroundColor: "#6c757d" }}

@@ -1,28 +1,41 @@
 import React from "react";
 
-function Skor({ scores, onResetScore, onBack }) {
+export default function Skor({ scores, onResetScore, onBack }) {
   return (
-    <div style={{ textAlign: "center", marginTop: "30px" }}>
-      <button onClick={onBack}>&larr; Kembali ke Menu</button>
-      <h2>Papan Skor</h2>
+    <div className="menu-container">
+      <h1 className="title">Riwayat Skor</h1>
+      <p className="subtitle">Statistik permainan kamu saat ini</p>
 
-      <div style={{ margin: "20px auto", width: "200px", textAlign: "left" }}>
-        <p>
-          <strong>Menang X:</strong> {scores.x}
-        </p>
-        <p>
-          <strong>Menang O:</strong> {scores.o}
-        </p>
-        <p>
-          <strong>Seri:</strong> {scores.draw}
-        </p>
+      <div
+        className="mini-scoreboard"
+        style={{ flexDirection: "column", gap: "10px", margin: "20px 0" }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>Pemain X:</span>
+          <strong>{scores.x} Menang</strong>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>Pemain O:</span>
+          <strong>{scores.o} Menang</strong>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>Seri:</span>
+          <strong>{scores.draw} Kali</strong>
+        </div>
       </div>
 
-      <button onClick={onResetScore} style={{ color: "red" }}>
-        Reset Skor
-      </button>
+      <div className="menu-buttons">
+        <button
+          className="btn"
+          style={{ backgroundColor: "#dc3545", color: "white" }}
+          onClick={onResetScore}
+        >
+          Reset Semua Skor
+        </button>
+        <button className="btn btn-secondary" onClick={onBack}>
+          &larr; Kembali ke Menu
+        </button>
+      </div>
     </div>
   );
 }
-
-export default Skor;
