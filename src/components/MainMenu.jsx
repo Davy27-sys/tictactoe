@@ -22,6 +22,19 @@ export default function MainMenu({ onNavigate }) {
         >
           🎨 Ubah Tampilan
         </button>
+        <button
+          className="btn btn-secondary"
+          onClick={() => onNavigate("history")}
+        >
+          📜 Riwayat Permainan
+        </button>
+
+        <button
+          className="btn btn-secondary"
+          onClick={() => onNavigate("vs-computer")}
+        >
+          🤖 Lawan Komputer
+        </button>
       </div>
     </div>
   );

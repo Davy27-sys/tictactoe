@@ -151,6 +151,7 @@ body {
 .btn-secondary {
   background-color: #334155;
   color: #f1f5f9;
+  border: 1px solid #475569;
 }
 
 .btn-secondary:hover {
@@ -221,4 +222,12 @@ body {
 .theme-neon .mini-scoreboard {
   background-color: #161633;
   border-color: #00ffcc;
+}
+
+.square:active {
+  transform: scale(0.97);
+}
+
+.square:hover {
+  transform: scale(1.03);
 }

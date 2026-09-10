@@ -33,14 +33,13 @@ export default function UbahTampilan({ currentTheme, onSelectTheme, onBack }) {
                 fontSize: "1rem",
                 fontWeight: "600",
                 color: isActive ? "#ffffff" : "#cbd5e1",
-                /* Efek gradien gelembung untuk tombol aktif vs non-aktif */
                 background: isActive
                   ? "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
                   : "#334155",
                 border: isActive
                   ? "2px solid #38bdf8"
                   : "2px solid transparent",
-                borderRadius: "50px", // Membentuk gelembung memanjang (kapsul)
+                borderRadius: "50px",
                 cursor: "pointer",
                 transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 boxShadow: isActive

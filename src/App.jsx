@@ -4,28 +4,32 @@ import MainMenu from "./components/MainMenu";
 import Game from "./components/Game";
 import Skor from "./components/Skor";
 import UbahTampilan from "./components/UbahTampilan";
+import Riwayat from "./components/Riwayat";
+
+const loadFromStorage = (key, defaultValue) => {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : defaultValue;
+  } catch (error) {
+    console.error(`Gagal memuat ${key} dari localStorage:`, error);
+    return defaultValue;
+  }
+};
+
 export default function App() {
   const [screen, setScreen] = useState("menu");
 
-  const [scores, setScores] = useState(() => {
-    try {
-      const saved = localStorage.getItem("tictactoe_scores");
-      return saved ? JSON.parse(saved) : { x: 0, o: 0, draw: 0 };
-    } catch (error) {
-      console.error("Gagal membaca skor dari localStorage:", error);
-      return { x: 0, o: 0, draw: 0 };
-    }
-  });
+  const [scores, setScores] = useState(() =>
+    loadFromStorage("tictactoe_scores", { x: 0, o: 0, draw: 0 }),
+  );
 
-  const [theme, setTheme] = useState(() => {
-    try {
-      const savedTheme = localStorage.getItem("tictactoe_theme");
-      return savedTheme ? JSON.parse(savedTheme) : "light";
-    } catch (error) {
-      console.error("Gagal membaca tema dari localStorage:", error);
-      return "light";
-    }
-  });
+  const [theme, setTheme] = useState(() =>
+    loadFromStorage("tictactoe_theme", "light"),
+  );
+
+  const [matchHistory, setMatchHistory] = useState(() =>
+    loadFromStorage("tictactoe_history", []),
+  );
 
   useEffect(() => {
     localStorage.setItem("tictactoe_scores", JSON.stringify(scores));
@@ -35,6 +39,10 @@ export default function App() {
     localStorage.setItem("tictactoe_theme", JSON.stringify(theme));
   }, [theme]);
 
+  useEffect(() => {
+    localStorage.setItem("tictactoe_history", JSON.stringify(matchHistory));
+  }, [matchHistory]);
+
   const handleGameEnd = (result) => {
     setScores((prev) => {
       if (result === "X") return { ...prev, x: prev.x + 1 };
@@ -42,17 +50,29 @@ export default function App() {
       if (result === "draw") return { ...prev, draw: prev.draw + 1 };
       return prev;
     });
+
+    const waktuSekarang = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const entriBaru = { hasil: result, waktu: waktuSekarang };
+
+    setMatchHistory((prevHistory) => [entriBaru, ...prevHistory]);
   };
 
   const handleResetScore = () => {
     setScores({ x: 0, o: 0, draw: 0 });
   };
 
+  const handleClearHistory = () => {
+    setMatchHistory([]);
+  };
+
   return (
     <div className={`App theme-${theme}`}>
+      {/* Teruskan onNavigate atau handler buka riwayat ke MainMenu */}
       {screen === "menu" && <MainMenu onNavigate={setScreen} />}
 
-      {/* 4. Teruskan prop 'theme' ke Game */}
       {screen === "game" && (
         <Game
           onBack={() => setScreen("menu")}
@@ -71,12 +91,31 @@ export default function App() {
         />
       )}
 
-      {/* 5. Kondisi untuk menampilkan komponen UbahTampilan */}
       {screen === "tampilan" && (
         <UbahTampilan
           currentTheme={theme}
           onSelectTheme={setTheme}
           onBack={() => setScreen("menu")}
+        />
+      )}
+
+      {/* LAYAR BARU: Komponen Riwayat Pertandingan */}
+      {screen === "history" && (
+        <Riwayat
+          history={matchHistory}
+          onClear={handleClearHistory}
+          onBack={() => setScreen("menu")}
+        />
+      )}
+
+      {screen === "vs-computer" && (
+        <Game
+          onBack={() => setScreen("menu")}
+          onGameEnd={handleGameEnd}
+          scores={scores}
+          onResetScore={handleResetScore}
+          theme={theme}
+          isComputerMode={true} 
         />
       )}
     </div>

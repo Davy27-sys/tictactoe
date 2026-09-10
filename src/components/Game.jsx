@@ -37,6 +37,7 @@ export default function Game({
   scores,
   onResetScore,
   theme = "light",
+  isComputerMode = false,
 }) {
   const [xIsNext, setXIsNext] = useState(true);
   const [squares, setSquares] = useState(Array(9).fill(null));
@@ -46,6 +47,8 @@ export default function Game({
   const winner = winInfo ? winInfo.winner : null;
   const winningLine = winInfo ? winInfo.line : [];
   const isDraw = !winner && squares.every((square) => square !== null);
+
+  const isComputerTurn = isComputerMode && !xIsNext && !winner && !isDraw;
 
   useEffect(() => {
     if ((winner || isDraw) && !hasRecordedResult) {
@@ -58,8 +61,54 @@ export default function Game({
     }
   }, [winner, isDraw, hasRecordedResult, onGameEnd]);
 
+  useEffect(() => {
+    if (isComputerTurn) {
+      const timer = setTimeout(() => {
+        const emptySquares = squares
+          .map((val, idx) => (val === null ? idx : null))
+          .filter((val) => val !== null);
+
+        if (emptySquares.length === 0) return;
+
+        let selectedMove = null;
+
+        for (let i of emptySquares) {
+          const boardCopy = [...squares];
+          boardCopy[i] = "O";
+          if (calculateWinner(boardCopy)?.winner === "O") {
+            selectedMove = i;
+            break;
+          }
+        }
+
+        if (selectedMove === null) {
+          for (let i of emptySquares) {
+            const boardCopy = [...squares];
+            boardCopy[i] = "X";
+            if (calculateWinner(boardCopy)?.winner === "X") {
+              selectedMove = i;
+              break;
+            }
+          }
+        }
+
+        if (selectedMove === null) {
+          const randomIndex = Math.floor(Math.random() * emptySquares.length);
+          selectedMove = emptySquares[randomIndex];
+        }
+
+        const nextSquares = squares.slice();
+        nextSquares[selectedMove] = "O";
+        setSquares(nextSquares);
+        setXIsNext(true);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isComputerTurn, squares]);
+
   function handleClick(i) {
-    if (squares[i] || winner) return;
+    if (squares[i] || winner || isComputerTurn) return;
 
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? "X" : "O";
@@ -78,6 +127,8 @@ export default function Game({
     status = `Pemenang: ${winner}`;
   } else if (isDraw) {
     status = "Hasil Seri!";
+  } else if (isComputerTurn) {
+    status = "Komputer sedang berpikir...";
   } else {
     status = `Giliran: ${xIsNext ? "X" : "O"}`;
   }
